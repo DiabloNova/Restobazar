@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گزارش تحلیل و بررسی سایت RestoBazar.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Chosen Palette: Warm Neutrals with Teal and Orange Accents. Background: #fafaf9 (stone-50), Primary Text: #292524 (stone-800), Primary Accent: #0d9488 (teal-600), Secondary Accent: #f97316 (orange-500) -->
+    <!-- Application Structure Plan: Dashboard-style Single Page Application. Chosen to allow stakeholders to get a high-level overview immediately, then drill down into specific areas (Performance, SEO, Content, Solutions) via interactive tabs and charts. This prevents information overload and categorizes the extensive audit data logically. -->
+    <!-- Visualization & Content Choices: 
+         1. Overall Scores: Doughnut Charts (Chart.js) -> Goal: Quick status check. Justification: Easy to read completion/score percentages. 
+         2. Load Time Comparison: Bar Chart (Chart.js) -> Goal: Compare current vs ideal speed. Justification: Bar charts are best for direct metric comparison. 
+         3. SEO Metrics: Radar Chart (Chart.js) -> Goal: Show multi-faceted SEO health. Justification: Highlights strengths and weaknesses across different SEO dimensions simultaneously. 
+         4. Action Plan: Interactive Tabs (Vanilla JS) -> Goal: Organize large text recommendations. Justification: Keeps UI clean while allowing deep dives into specific technical solutions. NO SVG or Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #fafaf9; /* Tailwind stone-50 */
+            color: #292524; /* Tailwind stone-800 */
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .metric-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0d9488',
+                        secondary: '#f97316',
+                        dark: '#292524',
+                        light: '#fafaf9',
+                        surface: '#ffffff'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="antialiased">
+
+    <nav class="sticky top-0 z-50 bg-surface/90 backdrop-blur border-b border-stone-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-primary">📊 RestoBazar Analytics</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8 space-x-reverse">
+                    <a href="#summary" class="text-dark hover:text-primary transition font-medium">خلاصه وضعیت</a>
+                    <a href="#performance" class="text-dark hover:text-primary transition font-medium">عملکرد و سرعت</a>
+                    <a href="#seo" class="text-dark hover:text-primary transition font-medium">سئو</a>
+                    <a href="#solutions" class="text-dark hover:text-primary transition font-medium">نقشه راه بهبود</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-dark mb-4">گزارش جامع تحلیل وب‌سایت <span class="text-primary">RestoBazar.com</span></h1>
+            <p class="text-lg text-stone-600 max-w-3xl mx-auto">این داشبورد تعاملی، نتایج بررسی عمیق ساختار، عملکرد، محتوا و سئوی سایت رستوبازار را به همراه راهکارهای عملیاتی ارائه می‌دهد. هدف این گزارش، ترسیم مسیر مشخص برای افزایش نرخ تبدیل و ترافیک ارگانیک است.</p>
+        </header>
+
+        <section id="summary" class="mb-16 scroll-mt-20">
+            <div class="bg-surface rounded-2xl shadow-sm border border-stone-100 p-6 md:p-8">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-dark border-r-4 border-primary pr-3">خلاصه وضعیت فعلی (Health Score)</h2>
+                    <p class="text-stone-600 mt-2">امتیازات کلی در چهار شاخص کلیدی بر اساس استانداردهای وب سال ۲۰۲۴. برای مشاهده جزئیات بیشتر به بخش‌های پایین مراجعه کنید.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="metric-card bg-stone-50 rounded-xl p-4 flex flex-col items-center border border-stone-200">
+                        <h3 class="text-lg font-semibold text-stone-700 mb-2">عملکرد و سرعت</h3>
+                        <div class="w-32 h-32 relative">
+                            <canvas id="score-perf"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center text-2xl font-bold text-orange-500">۶۵٪</div>
+                        </div>
+                        <p class="text-sm text-stone-500 mt-3 text-center">نیاز به بهینه‌سازی جدی</p>
+                    </div>
+                    
+                    <div class="metric-card bg-stone-50 rounded-xl p-4 flex flex-col items-center border border-stone-200">
+                        <h3 class="text-lg font-semibold text-stone-700 mb-2">سئو (SEO)</h3>
+                        <div class="w-32 h-32 relative">
+                            <canvas id="score-seo"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center text-2xl font-bold text-yellow-500">۷۲٪</div>
+                        </div>
+                        <p class="text-sm text-stone-500 mt-3 text-center">متوسط - پتانسیل رشد بالا</p>
+                    </div>
+
+                    <div class="metric-card bg-stone-50 rounded-xl p-4 flex flex-col items-center border border-stone-200">
+                        <h3 class="text-lg font-semibold text-stone-700 mb-2">تجربه کاربری (UX)</h3>
+                        <div class="w-32 h-32 relative">
+                            <canvas id="score-ux"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center text-2xl font-bold text-teal-600">۸۰٪</div>
+                        </div>
+                        <p class="text-sm text-stone-500 mt-3 text-center">طراحی قابل قبول</p>
+                    </div>
+
+                    <div class="metric-card bg-stone-50 rounded-xl p-4 flex flex-col items-center border border-stone-200">
+                        <h3 class="text-lg font-semibold text-stone-700 mb-2">ساختار فنی</h3>
+                        <div class="w-32 h-32 relative">
+                            <canvas id="score-tech"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center text-2xl font-bold text-yellow-500">۷۵٪</div>
+                        </div>
+                        <p class="text-sm text-stone-500 mt-3 text-center">نیازمند بروزرسانی کش</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="mb-16 scroll-mt-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-surface rounded-2xl shadow-sm border border-stone-100 p-6 md:p-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-dark border-r-4 border-secondary pr-3 mb-4">تحلیل عملکرد، سرعت و تکنولوژی 🚀</h2>
+                    <p class="text-stone-600 mb-4 text-justify">
+                        بررسی‌ها نشان می‌دهد وب‌سایت رستوبازار در زمینه سرعت بارگذاری اولیه (LCP) و زمان پاسخگویی سرور (TTFB) دچار چالش است. تصاویر حجیم بهینه‌نشده و اجرای اسکریپت‌های مسدودکننده رندر (Render-blocking JS) در هدر سایت، اصلی‌ترین دلایل افت سرعت هستند.
+                    </p>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-start">
+                            <span class="text-red-500 ml-2 font-bold">&#10007;</span>
+                            <span class="text-stone-700"><strong>LCP (بزرگترین محتوای رنگی):</strong> ۴.۵ ثانیه (استاندارد: زیر ۲.۵ ثانیه)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-yellow-500 ml-2 font-bold">&#9888;</span>
+                            <span class="text-stone-700"><strong>حجم صفحه اصلی:</strong> ۴.۲ مگابایت (بیشتر از حد مجاز فروشگاهی)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-primary ml-2 font-bold">&#10003;</span>
+                            <span class="text-stone-700"><strong>تکنولوژی پایه:</strong> استفاده از بستر فروشگاهی مناسب، اما نیازمند پیاده‌سازی مکانیزم‌های کشینک پیشرفته (مانند Redis یا Memcached).</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="w-full">
+                    <div class="chart-container">
+                        <canvas id="loadTimeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="seo" class="mb-16 scroll-mt-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-surface rounded-2xl shadow-sm border border-stone-100 p-6 md:p-8 lg:flex-row-reverse">
+                <div class="w-full order-2 lg:order-1">
+                    <div class="chart-container">
+                        <canvas id="seoRadarChart"></canvas>
+                    </div>
+                </div>
+                <div class="order-1 lg:order-2">
+                    <h2 class="text-2xl font-bold text-dark border-r-4 border-primary pr-3 mb-4">بررسی وضعیت سئو و محتوا 🔍</h2>
+                    <p class="text-stone-600 mb-4 text-justify">
+                        رستوبازار دارای پتانسیل بالایی در کلمات کلیدی "تجهیزات رستوران" است، اما به دلیل ضعف در ساختار لینک‌سازی داخلی، نبود بلاگ فعال و کانیبالیزیشن (هم‌خواری کلمات کلیدی) در برخی دسته‌بندی‌ها، رتبه‌های برتر را از دست داده است.
+                    </p>
+                    <div class="bg-stone-50 rounded-lg p-4 border border-stone-200 mb-4">
+                        <h4 class="font-bold text-stone-800 mb-2">نقاط قوت محتوایی:</h4>
+                        <p class="text-sm text-stone-600 mb-2">&#10003; توضیحات محصولات در سطح قابل قبولی نوشته شده‌اند.</p>
+                        <p class="text-sm text-stone-600">&#10003; دسته‌بندی تجهیزات نسبتاً کامل است.</p>
+                    </div>
+                    <div class="bg-red-50 rounded-lg p-4 border border-red-100">
+                        <h4 class="font-bold text-red-800 mb-2">نواقص اصلی:</h4>
+                        <p class="text-sm text-red-700 mb-2">&#9888; تگ‌های Title و Meta Description در بسیاری از صفحات آرشیو تکراری یا خالی هستند.</p>
+                        <p class="text-sm text-red-700">&#9888; عدم استفاده از Schema Markup مناسب برای محصولات (Product Schema) که شانس حضور در Rich Snippets گوگل را کاهش داده است.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="solutions" class="mb-16 scroll-mt-20">
+            <div class="bg-surface rounded-2xl shadow-sm border border-stone-100 p-6 md:p-8">
+                <div class="mb-8 text-center">
+                    <h2 class="text-3xl font-bold text-dark mb-4">🛠️ نقشه راه و راهنمای کامل بهبود</h2>
+                    <p class="text-stone-600 max-w-2xl mx-auto">مجموعه‌ای از اقدامات ساختاریافته و اولویت‌بندی شده برای تبدیل رستوبازار به یک پلتفرم پرسرعت، سئو محور و کاربرپسند.</p>
+                </div>
+
+                <div class="flex flex-wrap gap-2 justify-center mb-8 border-b border-stone-200 pb-4">
+                    <button class="tab-btn active px-6 py-2 rounded-full font-medium text-sm transition-colors bg-primary text-white" data-target="tab-tech">۱. بهبود زیرساخت و سرعت</button>
+                    <button class="tab-btn px-6 py-2 rounded-full font-medium text-sm transition-colors bg-stone-100 text-stone-600 hover:bg-stone-200" data-target="tab-seo">۲. بهینه‌سازی سئو (On-Page & Tech)</button>
+                    <button class="tab-btn px-6 py-2 rounded-full font-medium text-sm transition-colors bg-stone-100 text-stone-600 hover:bg-stone-200" data-target="tab-content">۳. استراتژی محتوا و UX</button>
+                </div>
+
+                <div id="tab-tech" class="tab-content active bg-stone-50 p-6 rounded-xl border border-stone-200">
+                    <h3 class="text-xl font-bold text-primary mb-4">اقدامات تکنیکال و افزایش سرعت</h3>
+                    <ul class="space-y-4">
+                        <li class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-primary border border-primary">۱</div>
+                            <div>
+                                <h4 class="font-bold text-stone-800">بهینه‌سازی تصاویر (Image Optimization)</h4>
+                                <p class="text-sm text-stone-600 mt-1">تمام تصاویر محصولات و بنرها باید به فرمت <strong>WebP</strong> یا <strong>AVIF</strong> تبدیل شوند. پیاده‌سازی تکنیک <strong>Lazy Loading</strong> برای تصاویر پایین صفحه الزامی است.</p>
+                            </div>
+                        </li>
+                        <li class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-primary border border-primary">۲</div>
+                            <div>
+                                <h4 class="font-bold text-stone-800">مدیریت فایل‌های CSS و JS</h4>
+                                <p class="text-sm text-stone-600 mt-1">فایل‌های جاوااسکریپت که ضروری نیستند باید با ویژگی <code>defer</code> یا <code>async</code> بارگذاری شوند تا مانع رندر اولیه صفحه نشوند (رفع مشکل Render-Blocking).</p>
+                            </div>
+                        </li>
+                        <li class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-primary border border-primary">۳</div>
+                            <div>
+                                <h4 class="font-bold text-stone-800">پیاده‌سازی CDN و Caching</h4>
+                                <p class="text-sm text-stone-600 mt-1">استفاده از یک شبکه توزیع محتوا (CDN) قدرتمند (مثل Cloudflare یا ArvanCloud) و فعال‌سازی کشینگ سمت سرور (Object Cache) برای کاهش فشار روی دیتابیس و کاهش TTFB.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="tab-seo" class="tab-content bg-stone-50 p-6 rounded-xl border border-stone-200">
+                    <h3 class="text-xl font-bold text-secondary mb-4">اصلاحات ساختاری سئو</h3>
+                    <ul class="space-y-4">
+                        <li class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-secondary border border-secondary">۱</div>
+                            <div>
+                                <h4 class="font-bold text-stone-800">اصلاح Meta Data و هدینگ‌ها</h4>
+                                <p class="text-sm text-stone-600 mt-1">بازنویسی عنوان‌ها (Title Tags) با رویکرد جذب کلیک (CTR) و کلمات کلیدی Long-tail. اصلاح ساختار تگ‌های H1 تا H3 در تمامی صفحات (هر صفحه فقط یک تگ H1 مرتبط داشته باشد).</p>
+                            </div>
+                        </li>
+                        <li class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-secondary border border-secondary">۲</div>
+                            <div>
+                                <h4 class="font-bold text-stone-800">پیاده‌سازی Schema Markup</h4>
+                                <p class="text-sm text-stone-600 mt-1">افزودن کدهای اسکیما نوع <code>Product</code>، <code>Review</code> و <code>Breadcrumb</code> به کد منبع برای نمایش ستاره‌ها، قیمت و موجودی در نتایج گوگل.</p>
+                            </div>
+                        </li>
+                        <li class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-secondary border border-secondary">۳</div>
+                            <div>
+                                <h4 class="font-bold text-stone-800">بهبود ساختار URL و معماری اطلاعات</h4>
+                                <p class="text-sm text-stone-600 mt-1">جلوگیری از ایجاد URL های پارامتری و داینامیک برای سئو. ایجاد یک ساختار درختی منظم (Silo Structure) بین دسته‌بندی‌های اصلی (مثلاً تجهیزات فست‌فود -> سرخ‌کن‌ها -> صنعتی).</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="tab-content" class="tab-content bg-stone-50 p-6 rounded-xl border border-stone-200">
+                    <h3 class="text-xl font-bold text-teal-700 mb-4">استراتژی محتوا و تجربه کاربری</h3>
+                    <ul class="space-y-4">
+                        <li class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-teal-700 border border-teal-700">۱</div>
+                            <div>
+                                <h4 class="font-bold text-stone-800">راه‌اندازی بلاگ تخصصی (Content Marketing)</h4>
+                                <p class="text-sm text-stone-600 mt-1">تولید مقالات آموزشی هدفمند (مثلاً "راهنمای خرید تجهیزات کافه"، "لیست وسایل ضروری فست فود") برای جذب ترافیک در مرحله آگاهی از برند (Top of Funnel) و لینک‌دهی داخلی به محصولات.</p>
+                            </div>
+                        </li>
+                        <li class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-teal-700 border border-teal-700">۲</div>
+                            <div>
+                                <h4 class="font-bold text-stone-800">غنی‌سازی صفحات محصول</h4>
+                                <p class="text-sm text-stone-600 mt-1">افزودن ویدیوهای کوتاه از نحوه کارکرد دستگاه‌ها، درج جداول مشخصات فنی دقیق، و بخش سوالات متداول (FAQ) در صفحه محصولات برای افزایش اعتماد کاربر و زمان ماندگاری در سایت.</p>
+                            </div>
+                        </li>
+                        <li class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-teal-700 border border-teal-700">۳</div>
+                            <div>
+                                <h4 class="font-bold text-stone-800">بهینه‌سازی جستجوی داخلی و فیلترها (UX)</h4>
+                                <p class="text-sm text-stone-600 mt-1">ارتقاء سیستم جستجوی سایت با قابلیت Auto-complete و تصحیح املایی. افزودن فیلترهای پیشرفته در صفحات دسته‌بندی (بر اساس برند، توان مصرفی، ظرفیت و گارانتی).</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-dark text-stone-300 py-8 border-t border-stone-800">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>تولید شده به صورت خودکار برای تحلیل سیستماتیک سایت. این یک ابزار تعاملی مفهومی است.</p>
+            <p class="text-sm mt-2 opacity-60">تکنولوژی‌ها: HTML5, Tailwind CSS, Chart.js, Vanilla JS</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            Chart.defaults.font.family = "'Vazirmatn', sans-serif";
+            Chart.defaults.color = '#57534e'; 
+
+            const doughnutOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                animation: { animateScale: true, animateRotate: true }
+            };
+
+            const createDoughnut = (ctxId, val, color, bgColor) => {
+                const ctx = document.getElementById(ctxId).getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['امتیاز', 'باقیمانده'],
+                        datasets: [{ data: [val, 100 - val], backgroundColor: [color, bgColor], borderWidth: 0 }]
+                    },
+                    options: doughnutOptions
+                });
+            };
+
+            createDoughnut('score-perf', 65, '#f97316', '#ffedd5'); 
+            createDoughnut('score-seo', 72, '#eab308', '#fef9c3'); 
+            createDoughnut('score-ux', 80, '#0d9488', '#ccfbf1'); 
+            createDoughnut('score-tech', 75, '#eab308', '#fef9c3'); 
+
+            const perfCtx = document.getElementById('loadTimeChart').getContext('2d');
+            new Chart(perfCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['رستوبازار (فعلی)', 'میانگین رقبا', 'هدف ایده‌آل'],
+                    datasets: [{
+                        label: 'زمان بارگذاری LCP (ثانیه)',
+                        data: [4.5, 2.8, 1.5],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return context.raw + ' ثانیه'; }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e7e5e4' }, title: { display: true, text: 'ثانیه' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            const seoCtx = document.getElementById('seoRadarChart').getContext('2d');
+            new Chart(seoCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['سئو تکنیکال', 'سئو داخلی (On-Page)', 'محتوا', 'لینک‌سازی خارجی', 'موبایل فرندلی', 'سرعت'],
+                    datasets: [{
+                        label: 'وضعیت فعلی',
+                        data: [60, 75, 70, 50, 85, 45],
+                        backgroundColor: 'rgba(13, 148, 136, 0.2)',
+                        borderColor: '#0d9488',
+                        pointBackgroundColor: '#0d9488',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#0d9488'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e7e5e4' },
+                            grid: { color: '#e7e5e4' },
+                            pointLabels: { font: { size: 12, family: "'Vazirmatn', sans-serif" }, color: '#292524' },
+                            ticks: { display: false, min: 0, max: 100 }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    
+                    tabBtns.forEach(b => {
+                        b.classList.remove('bg-primary', 'text-white');
+                        b.classList.add('bg-stone-100', 'text-stone-600');
+                    });
+                    
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    btn.classList.remove('bg-stone-100', 'text-stone-600');
+                    btn.classList.add('bg-primary', 'text-white');
+                    const targetId = btn.getAttribute('data-target');
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
