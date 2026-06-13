@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گزارش مقایسه‌ای و تحلیل روند بهبود وب‌سایت RestoBazar.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Chosen Palette: Premium Slate with Emerald Green (for positive progress) and Amber. Background: #f8fafc (slate-50), Primary Text: #0f172a (slate-900), Accent Emerald: #059669 (emerald-600), Accent Amber: #d97706 (amber-600) -->
+    <!-- Application Structure Plan: An interactive comparison dashboard. It contrasts the previous audit with the new post-optimization metrics. A dynamic "Before vs After" toggler and interactive radar/bar charts allow stakeholders to quickly measure the ROI of recent development sprints. -->
+    <!-- Visualization & Content Choices: 
+         1. Metric Comparison Cards: Visual diff indicators (e.g., +23% speed improvement).
+         2. Score Progress: Double Doughnut/Bar Comparison Charts showing previous vs current benchmarks.
+         3. Web Vitals Comparison: Grouped Horizontal Bar Chart comparing LCP, TTFB, and Page Size.
+         4. SEO Dimension Shift: Multi-dataset Radar Chart showing the expansion of SEO coverage.
+         5. Dynamic Optimization Tracker: Filterable action board with states (Done, In-Progress, Planned). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8fafc; /* Tailwind slate-50 */
+            color: #0f172a; /* Tailwind slate-900 */
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-interaction {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-interaction:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        success: '#059669',
+                        warning: '#d97706',
+                        accent: '#2563eb',
+                        surface: '#ffffff'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="antialiased">
+
+    <nav class="sticky top-0 z-50 bg-surface/90 backdrop-blur border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <span>📈</span> گزارش پیشرفت فنی رستوبازار
+                    </span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6 space-x-reverse">
+                    <a href="#overview" class="text-slate-600 hover:text-accent transition font-medium">مقایسه کلی</a>
+                    <a href="#vitals" class="text-slate-600 hover:text-accent transition font-medium">شاخص‌های حیاتی</a>
+                    <a href="#seo-compare" class="text-slate-600 hover:text-accent transition font-medium">سئو و محتوا</a>
+                    <a href="#checklist" class="text-slate-600 hover:text-accent transition font-medium">اقدامات انجام‌شده</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <header class="mb-12 text-center bg-white rounded-3xl p-6 md:p-10 border border-slate-200 shadow-sm">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full mb-4">
+                <span>✦</span> تحلیل مقایسه‌ای روند بهینه‌سازی وب‌سایت
+            </div>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 leading-tight">
+                رشد شاخص‌های فنی وب‌سایت <span class="text-emerald-600">RestoBazar.com</span>
+            </h1>
+            <p class="text-base md:text-lg text-slate-600 max-w-3xl mx-auto">
+                اقدامات اخیر تیم فنی منجر به جهش قابل توجهی در سرعت بارگذاری، کاهش بایت‌های اضافه و ارتقاء ساختار محتوایی شده است. در ادامه مقایسه کاملی از گزارش دوره گذشته و وضعیت فعلی ارائه شده است.
+            </p>
+        </header>
+
+        <section id="overview" class="mb-16 scroll-mt-20">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-slate-100 pb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                            <span>📊</span> تغییرات کلی در یک نگاه
+                        </h2>
+                        <p class="text-slate-500 mt-1">تغییر امتیازات کلی بر اساس بررسی‌های جدید بعد از اعمال بهینه‌سازی‌ها.</p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-emerald-800 text-sm font-medium">
+                        ✓ برآیند تغییرات: <strong class="text-lg">+۲۳٪</strong> ارتقای کل سیستم
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="card-interaction bg-slate-50 rounded-xl p-5 border border-slate-200 relative overflow-hidden">
+                        <div class="absolute top-2 left-2 text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">+۲۳٪</div>
+                        <h3 class="text-sm font-bold text-slate-500 mb-2">عملکرد و سرعت</h3>
+                        <div class="flex items-baseline gap-2 mb-3">
+                            <span class="text-3xl font-extrabold text-emerald-600">۸۸٪</span>
+                            <span class="text-xs text-slate-400 line-through">۶۵٪ قبلی</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div class="bg-emerald-600 h-2 rounded-full" style="width: 88%"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-interaction bg-slate-50 rounded-xl p-5 border border-slate-200 relative overflow-hidden">
+                        <div class="absolute top-2 left-2 text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">+۱۲٪</div>
+                        <h3 class="text-sm font-bold text-slate-500 mb-2">سئو و مارک‌آپ</h3>
+                        <div class="flex items-baseline gap-2 mb-3">
+                            <span class="text-3xl font-extrabold text-emerald-600">۸۴٪</span>
+                            <span class="text-xs text-slate-400 line-through">۷۲٪ قبلی</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div class="bg-emerald-600 h-2 rounded-full" style="width: 84%"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-interaction bg-slate-50 rounded-xl p-5 border border-slate-200 relative overflow-hidden">
+                        <div class="absolute top-2 left-2 text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">+۵٪</div>
+                        <h3 class="text-sm font-bold text-slate-500 mb-2">تجربه کاربری (UX)</h3>
+                        <div class="flex items-baseline gap-2 mb-3">
+                            <span class="text-3xl font-extrabold text-emerald-600">۸۵٪</span>
+                            <span class="text-xs text-slate-400 line-through">۸۰٪ قبلی</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div class="bg-emerald-600 h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-interaction bg-slate-50 rounded-xl p-5 border border-slate-200 relative overflow-hidden">
+                        <div class="absolute top-2 left-2 text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">+۷٪</div>
+                        <h3 class="text-sm font-bold text-slate-500 mb-2">ساختار فنی</h3>
+                        <div class="flex items-baseline gap-2 mb-3">
+                            <span class="text-3xl font-extrabold text-emerald-600">۸۲٪</span>
+                            <span class="text-xs text-slate-400 line-through">۷۵٪ قبلی</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div class="bg-emerald-600 h-2 rounded-full" style="width: 82%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="vitals" class="mb-16 scroll-mt-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 border-r-4 border-emerald-600 pr-3 mb-4">شاخص‌های حیاتی و سرعت بارگذاری ⚡</h2>
+                    <p class="text-slate-600 mb-6 text-justify">
+                        در گزارش قبلی، سرعت بارگذاری محتوا (LCP) حدود ۴.۵ ثانیه اندازه‌گیری شده بود که ضربه شدیدی به سئو و نرخ تبدیل کاربران می‌زد. در روند بهینه‌سازی جدید، با فعال‌سازی مکانیزم‌های فشرده‌سازی نوین و اصلاح اسکریپت‌های بلاک‌کننده، حجم هوم‌پیج بیش از ۵۰٪ کاهش یافته و این شاخص‌ها بهبود یافته‌اند.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                            <div>
+                                <span class="block text-sm font-bold text-slate-700">بزرگترین محتوای رنگی (LCP)</span>
+                                <span class="text-xs text-slate-400">کاهش چشمگیر زمان انتظار کاربر</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-emerald-600 font-bold block">۲.۱ ثانیه (سبز)</span>
+                                <span class="text-xs text-rose-500 line-through">۴.۵ ثانیه قبلی</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                            <div>
+                                <span class="block text-sm font-bold text-slate-700">حجم لندینگ اصلی (Page Size)</span>
+                                <span class="text-xs text-slate-400">فشرده‌سازی تصاویر به WebP</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-emerald-600 font-bold block">۱.۸ مگابایت</span>
+                                <span class="text-xs text-rose-500 line-through">۴.۲ مگابایت قبلی</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                            <div>
+                                <span class="block text-sm font-bold text-slate-700">زمان اولین بایت (TTFB)</span>
+                                <span class="text-xs text-slate-400">بهینه‌سازی دیتابیس و Redis Cache</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-emerald-600 font-bold block">۰.۴ ثانیه</span>
+                                <span class="text-xs text-amber-500 line-through">۱.۱ ثانیه قبلی</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full">
+                    <div class="chart-container">
+                        <canvas id="vitalsCompareChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="seo-compare" class="mb-16 scroll-mt-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+                <div class="w-full order-2 lg:order-1">
+                    <div class="chart-container">
+                        <canvas id="seoImprovementRadar"></canvas>
+                    </div>
+                </div>
+                <div class="order-1 lg:order-2">
+                    <h2 class="text-2xl font-bold text-slate-900 border-r-4 border-accent pr-3 mb-4">تغییر توازن در ابعاد سئو و محتوا 🎯</h2>
+                    <p class="text-slate-600 mb-4 text-justify">
+                        نمودار روبه‌رو رشد متوازن ساختار سئو را در ۶ بعد فنی و محتوایی نشان می‌دهد. اضافه شدن اسکیما مارک‌آپ‌ها به محصولات و راه‌اندازی اولین فاز تولید محتوای بلاگ، خلاءهای بزرگ گذشته را پر کرده است.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-2">
+                            <span class="text-emerald-600 font-bold">✓</span>
+                            <p class="text-sm text-slate-600"><strong class="text-slate-800">کاهش هم‌خواری (Cannibalization):</strong> با بهینه‌سازی دسته‌بندی تجهیزات فست‌فود و کافی‌شاپ، صفحات آرشیو دیگر با یکدیگر رقابت منفی ندارند.</p>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-emerald-600 font-bold">✓</span>
+                            <p class="text-sm text-slate-600"><strong class="text-slate-800">تزریق Schema:</strong> پیاده‌سازی موفق اسکیمای <code>Product</code> و <code>FAQ</code> به وب‌سایت شانس اخذ ستاره در سرپ (SERP) را بهبود بخشیده است.</p>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-emerald-600 font-bold">✓</span>
+                            <p class="text-sm text-slate-600"><strong class="text-slate-800">لینک‌سازی داخلی ارگانیک:</strong> مقالات جدید وبلاگ با ساختار دهی منظم به عنوان خوشه‌های محتوایی (Content Hubs) به صفحات لندینگ محصول لینک‌دهی شده‌اند.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="checklist" class="mb-16 scroll-mt-20">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+                <div class="mb-8 text-center">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-2">📋 پنل تعاملی پیگیری اقدامات</h2>
+                    <p class="text-slate-500">لیست فیلترپذیر تغییرات اعمال‌شده و برنامه‌های پیش رو برای ارتقای پایدار رستوبازار.</p>
+                </div>
+
+                <div class="flex flex-wrap gap-2 justify-center mb-8 border-b border-slate-100 pb-4">
+                    <button class="status-btn active px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition-colors bg-emerald-600 text-white" data-filter="all">همه اقدامات</button>
+                    <button class="status-btn px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200" data-filter="done">انجام‌شده (✓)</button>
+                    <button class="status-btn px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200" data-filter="inprogress">در حال انجام (⚙)</button>
+                    <button class="status-btn px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200" data-filter="planned">برنامه‌ریزی آینده (★)</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="checklist-grid">
+                    
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between" data-status="done">
+                        <div>
+                            <span class="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded mb-3">انجام‌شده</span>
+                            <h4 class="font-bold text-slate-800 mb-2">تبدیل تصاویر به WebP</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">بیش از ۹۰٪ حجم کل تصاویر فشرده‌سازی شده و در نتیجه سرعت بارگیری لندینگ افزایش یافت.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-emerald-600 font-bold">پیشرفت: ۱۰۰٪</span>
+                            <span class="text-slate-400">فاز اول سرعت</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between" data-status="done">
+                        <div>
+                            <span class="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded mb-3">انجام‌شده</span>
+                            <h4 class="font-bold text-slate-800 mb-2">اصلاح تگ‌های متا و هدینگ‌ها</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">بسیاری از عنوان‌های تکراری و تگ‌های H1 مفقود شده در آرشیو محصولات پاک‌سازی و یکپارچه شدند.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-emerald-600 font-bold">پیشرفت: ۱۰۰٪</span>
+                            <span class="text-slate-400">سئو On-Page</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between" data-status="done">
+                        <div>
+                            <span class="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded mb-3">انجام‌شده</span>
+                            <h4 class="font-bold text-slate-800 mb-2">پیاده‌سازی Redis Cache</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">کش پاسخ‌های سرور با ابزار Redis متصل شد که TTFB را از ثانیه به مقیاس میلی‌ثانیه کاهش داد.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-emerald-600 font-bold">پیشرفت: ۱۰۰٪</span>
+                            <span class="text-slate-400">پیکربندی فنی</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between" data-status="inprogress">
+                        <div>
+                            <span class="inline-block px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-semibold rounded mb-3">در حال انجام</span>
+                            <h4 class="font-bold text-slate-800 mb-2">پیاده‌سازی اسکیمای ساختاریافته (Schema Markup)</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">پیاده‌سازی اتوماتیک کدهای اسکیما برای محصولات پربازدید و مابقی دسته‌بندی‌ها در حال توسعه است.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-amber-600 font-bold">پیشرفت: ۶۰٪</span>
+                            <span class="text-slate-400">سئو تکنیکال</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between" data-status="inprogress">
+                        <div>
+                            <span class="inline-block px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-semibold rounded mb-3">در حال انجام</span>
+                            <h4 class="font-bold text-slate-800 mb-2">توسعه بخش مقالات و هاب بلاگ</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">تولید منظم ۳ مقاله تخصصی در هفته با هدف شکار کلمات کلیدی گره خورده با صنعت رستورانی شروع شده است.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-amber-600 font-bold">پیشرفت: ۴۰٪</span>
+                            <span class="text-slate-400">بازاریابی محتوایی</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between" data-status="planned">
+                        <div>
+                            <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-semibold rounded mb-3">برنامه‌ریزی آینده</span>
+                            <h4 class="font-bold text-slate-800 mb-2">استفاده کامل از CDN ابری برای استیکت‌ها</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">اتصال سیستم توزیع محتوای یکپارچه جهت کاهش کامل بارگذاری فایلهای ثابت در سراسر کشور.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-blue-600 font-bold">اولویت بالا</span>
+                            <span class="text-slate-400">زیرساخت ابری</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs md:text-sm">
+            <p>این داشبورد مقایسه‌ای تعاملی بر پایه نتایج پایش سرعت و سئوی دوره‌ای وب‌سایت رستوبازار طراحی شده است.</p>
+            <p class="mt-2 opacity-50">تکنولوژی‌ها: HTML5, Tailwind CSS, Chart.js, Vanilla JS</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            Chart.defaults.font.family = "'Vazirmatn', sans-serif";
+            Chart.defaults.color = '#475569'; 
+
+            const vitalsCtx = document.getElementById('vitalsCompareChart').getContext('2d');
+            new Chart(vitalsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['زمان LCP (ثانیه)', 'زمان اولین بایت TTFB (ثانیه)', 'حجم صفحه اصلی (مگابایت)'],
+                    datasets: [
+                        {
+                            label: 'قبل از بهینه‌سازی (گزارش قبلی)',
+                            data: [4.5, 1.1, 4.2],
+                            backgroundColor: '#f87171',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'بعد از بهینه‌سازی (وضعیت فعلی)',
+                            data: [2.1, 0.4, 1.8],
+                            backgroundColor: '#34d399',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', align: 'start' },
+                        tooltip: { enabled: true }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            const seoRadarCtx = document.getElementById('seoImprovementRadar').getContext('2d');
+            new Chart(seoRadarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['سئو تکنیکال', 'سئو داخلی (On-Page)', 'سرعت لودینگ', 'طراحی ریسپانسیو', 'بازاریابی محتوایی', 'لینک‌سازی ساختاریافته'],
+                    datasets: [
+                        {
+                            label: 'دوره قبل',
+                            data: [60, 75, 45, 85, 55, 50],
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderColor: '#f87171',
+                            pointBackgroundColor: '#f87171'
+                        },
+                        {
+                            label: 'وضعیت کنونی',
+                            data: [82, 90, 88, 92, 70, 75],
+                            backgroundColor: 'rgba(52, 211, 153, 0.15)',
+                            borderColor: '#34d399',
+                            pointBackgroundColor: '#34d399'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            pointLabels: { font: { size: 11 }, color: '#0f172a' },
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            const filterBtns = document.querySelectorAll('.status-btn');
+            const checklistItems = document.querySelectorAll('#checklist-grid > div');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-emerald-600', 'text-white');
+                        b.classList.add('bg-slate-100', 'text-slate-600');
+                    });
+
+                    btn.classList.remove('bg-slate-100', 'text-slate-600');
+                    btn.classList.add('bg-emerald-600', 'text-white');
+
+                    const filterValue = btn.getAttribute('data-filter');
+
+                    checklistItems.forEach(item => {
+                        if (filterValue === 'all' || item.getAttribute('data-status') === filterValue) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
